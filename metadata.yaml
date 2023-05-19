@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-homepage: "https://www.example.com"
-documentation: "https://www.example.com/documentation"
+homepage: "https://www.pubtech.ai/"
+documentation: "https://docs.pubtech.ai/pubtech-cmp"
 versions:
-  - sha: 5f02a788b90ae804f86b04aa24af8937e567874a
-    changeNotes: Initial Version
+  - sha: f37f51c9edeb335f2b98c3fedf0b110cbe865cbf
+    changeNotes: Initial release
