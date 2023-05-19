@@ -15,5 +15,5 @@
 homepage: "https://www.pubtech.ai/"
 documentation: "https://docs.pubtech.ai/pubtech-cmp"
 versions:
-  - sha: f37f51c9edeb335f2b98c3fedf0b110cbe865cbf
+  - sha: 8e5c4d52b020050ea936833fd45a24f35784eb4f
     changeNotes: Initial release
