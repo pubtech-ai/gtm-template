@@ -202,11 +202,12 @@ const main = (data) => {
    /**
     * Add event listener to trigger update when consent changes
     *
-    * Calling __pub_tech_cmp_on_consent_queue implemented by PubConsent CMP.
+    * Calling __pub_tech_cmp_on_consent_queue__pre implemented by PubConsent CMP.
+    * The the queue__pre is only for internal usage like this integration. Every incorrect usage may cause delay.
     * The callback should be called with an object containing fields that correspond to the five built-in Google consent types.
     * The vendorsData.googleConsents is supposed to comply with this standard.
     */
-  const consentReadyPush = createQueue('__pub_tech_cmp_on_consent_queue');
+  const consentReadyPush = createQueue('__pub_tech_cmp_on_consent_queue__pre');
   consentReadyPush(readConsentsFromCMP);
 };
 
@@ -272,7 +273,7 @@ ___WEB_PERMISSIONS___
                 "mapValue": [
                   {
                     "type": 1,
-                    "string": "__pub_tech_cmp_on_consent_queue"
+                    "string": "__pub_tech_cmp_on_consent_queue__pre"
                   },
                   {
                     "type": 8,
@@ -740,7 +741,7 @@ scenarios:
     // Call runCode to run the template's code.
     runCode(mockData);
 
-    const pubtechQueue = copyFromWindow('__pub_tech_cmp_on_consent_queue');
+    const pubtechQueue = copyFromWindow('__pub_tech_cmp_on_consent_queue__pre');
 
     const googleConsents = {
         adConsentGranted: false,
