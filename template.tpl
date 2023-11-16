@@ -1,4 +1,4 @@
-﻿___TERMS_OF_SERVICE___
+___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -137,6 +137,8 @@ const parseCommandData = (settings) => {
 const onUserConsent = (consent) => {
   const consentModeStates = {
     ad_storage: consent.adConsentGranted ? 'granted' : 'denied',
+    ad_user_data: consent.adUserDataGranted ? 'granted' : 'denied',
+    ad_personalization: consent.adPersonalizationGranted ? 'granted' : 'denied',
     analytics_storage: consent.analyticsConsentGranted ? 'granted' :
                                                             'denied',
     functionality_storage: consent.functionalityConsentGranted ? 'granted' :
@@ -154,21 +156,19 @@ const onUserConsent = (consent) => {
   setInWindow('__pubtech_cmp_gcm_updateConsentState', consentModeStates, true);
 };
 
+function readConsentsFromCMP(consentStrings, tcModel, pcModel, vendorsData) {
+      //This use googleConsents integration inside our CMP.
+      log('vendorsDataGoogleConsents =', vendorsData.googleConsents);
+      onUserConsent(vendorsData.googleConsents);
+}
+
+readConsentsFromCMP.pubtech_queue_cb_skip_yield = 1;
+
 /**
  * Executes the default command, sets the developer ID, and sets up the consent
  * update callback
  */
 const main = (data) => {
-    // Set default consent state values for all regions
-  setDefaultConsentState({
-    "ad_storage": 'denied',
-    "analytics_storage": 'denied',
-    "functionality_storage": 'denied',
-    "personalization_storage": 'denied',
-    "security_storage": 'granted',
-    "wait_for_update": 500,
-  });
-
   // Set developer ID
   //gtagSet('developer_id.<replace_with_your_developer_id>', true);
   // Set default consent state(s)
@@ -181,27 +181,36 @@ const main = (data) => {
       //For testing purpose live and here
       setInWindow('__pubtech_cmp_gcm_defaultConsentState', defaultData, true);
     });
+  } else {
+     // Set default consent state values for all regions
+    setDefaultConsentState({
+      "ad_storage": 'denied',
+      "ad_user_data": 'denied',
+      "ad_personalization": 'denied',
+      "analytics_storage": 'denied',
+      "functionality_storage": 'denied',
+      "personalization_storage": 'denied',
+      "security_storage": 'denied',
+      "wait_for_update": 500,
+    });
   }
   gtagSet('ads_data_redaction', data.ads_data_redaction);
   gtagSet('url_passthrough', data.urlPassThrough);
 
-  /**
-   * Add event listener to trigger update when consent changes
-   *
-   * Calling __pub_tech_cmp_on_consent_queue implemented by PubConsent CMP.
-   * The callback should be called with an object containing fields that correspond to the five built-in Google consent types.
-   * The vendorsData.googleConsents is supposed to comply with this standard.
-   */
+  data.gtmOnSuccess();
+
+   /**
+    * Add event listener to trigger update when consent changes
+    *
+    * Calling __pub_tech_cmp_on_consent_queue implemented by PubConsent CMP.
+    * The callback should be called with an object containing fields that correspond to the five built-in Google consent types.
+    * The vendorsData.googleConsents is supposed to comply with this standard.
+    */
   const consentReadyPush = createQueue('__pub_tech_cmp_on_consent_queue');
-    consentReadyPush(function (consentStrings, tcModel, pcModel, vendorsData) {
-      //This use googleConsents integration inside our CMP.
-      log('vendorsDataGoogleConsents =', vendorsData.googleConsents);
-      onUserConsent(vendorsData.googleConsents);
-    });
+  consentReadyPush(readConsentsFromCMP);
 };
 
 main(data);
-data.gtmOnSuccess();
 
 
 ___WEB_PERMISSIONS___
@@ -631,6 +640,68 @@ ___WEB_PERMISSIONS___
                     "boolean": true
                   }
                 ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "consentType"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "ad_user_data"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "consentType"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "ad_personalization"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
               }
             ]
           }
@@ -732,6 +803,6 @@ scenarios:
 
 ___NOTES___
 
-Created on 19/05/2023, 09:29:06
+Created on 05/06/2023, 11:36:59
 
 
