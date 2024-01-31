@@ -15,5 +15,7 @@
 homepage: "https://www.pubtech.ai/"
 documentation: "https://docs.pubtech.ai/pubtech-cmp"
 versions:
+  - sha: e565edf992678781a1eaa2b5fcdecf57b69f9952
+    changeNotes: remove unused param
   - sha: b7d5cde1b5f12fb22128bdb4c2764122fa757768
     changeNotes: change queue usage
