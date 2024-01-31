@@ -162,8 +162,6 @@ function readConsentsFromCMP(consentStrings, tcModel, pcModel, vendorsData) {
       onUserConsent(vendorsData.googleConsents);
 }
 
-readConsentsFromCMP.pubtech_queue_cb_skip_yield = 1;
-
 /**
  * Executes the default command, sets the developer ID, and sets up the consent
  * update callback
