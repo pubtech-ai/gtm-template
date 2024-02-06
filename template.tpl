@@ -168,7 +168,7 @@ function readConsentsFromCMP(consentStrings, tcModel, pcModel, vendorsData) {
  */
 const main = (data) => {
   // Set developer ID
-  //gtagSet('developer_id.<replace_with_your_developer_id>', true);
+  gtagSet('developer_id.dYWU3OD', true);
   // Set default consent state(s)
   if (data.defaultSettings) {
     data.defaultSettings.forEach(settings => {
