@@ -15,6 +15,8 @@
 homepage: "https://www.pubtech.ai/"
 documentation: "https://docs.pubtech.ai/pubtech-cmp"
 versions:
+  - sha: 30e803cecd7a38c932f015338db25f2d2d40a768
+    changeNotes: add permission
   - sha: adc41e5524c499fc363db4c6b96872805db71ca1
     changeNotes: set developer id
   - sha: e565edf992678781a1eaa2b5fcdecf57b69f9952
