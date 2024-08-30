@@ -168,7 +168,11 @@ function readConsentsFromCMP(consentStrings, tcModel, pcModel, vendorsData) {
  */
 const main = (data) => {
   // Set developer ID
-  gtagSet('developer_id.dYWU3OD', true);
+  gtagSet({
+    'developer_id.dYWU3OD': true,
+    'ads_data_redaction': data.ads_data_redaction,
+    'url_passthrough': data.urlPassThrough
+  });
   // Set default consent state(s)
   if (data.defaultSettings) {
     data.defaultSettings.forEach(settings => {
@@ -192,8 +196,6 @@ const main = (data) => {
       "wait_for_update": 500,
     });
   }
-  gtagSet('ads_data_redaction', data.ads_data_redaction);
-  gtagSet('url_passthrough', data.urlPassThrough);
 
   data.gtmOnSuccess();
 
