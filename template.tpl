@@ -156,10 +156,10 @@ const onUserConsent = (consent) => {
   setInWindow('__pubtech_cmp_gcm_updateConsentState', consentModeStates, true);
 };
 
-function readConsentsFromCMP(consentStrings, tcModel, pcModel, vendorsData) {
+function readConsentsFromCMP(cmpType, consentData) {
       //This use googleConsents integration inside our CMP.
-      log('vendorsDataGoogleConsents =', vendorsData.googleConsents);
-      onUserConsent(vendorsData.googleConsents);
+      log('vendorsDataGoogleConsents =', consentData.integrations.googleConsentMode);
+      onUserConsent(consentData.integrations.googleConsentMode);
 }
 
 /**
@@ -207,7 +207,7 @@ const main = (data) => {
     * The callback should be called with an object containing fields that correspond to the five built-in Google consent types.
     * The vendorsData.googleConsents is supposed to comply with this standard.
     */
-  const consentReadyPush = createQueue('__pub_tech_cmp_on_consent_queue__pre');
+  const consentReadyPush = createQueue('__pubtech_queue_on_consent__pre');
   consentReadyPush(readConsentsFromCMP);
 };
 
@@ -273,7 +273,7 @@ ___WEB_PERMISSIONS___
                 "mapValue": [
                   {
                     "type": 1,
-                    "string": "__pub_tech_cmp_on_consent_queue__pre"
+                    "string": "__pubtech_queue_on_consent__pre"
                   },
                   {
                     "type": 8,
@@ -745,7 +745,7 @@ scenarios:
     // Call runCode to run the template's code.
     runCode(mockData);
 
-    const pubtechQueue = copyFromWindow('__pub_tech_cmp_on_consent_queue__pre');
+    const pubtechQueue = copyFromWindow('__pubtech_queue_on_consent__pre');
 
     const googleConsents = {
         adConsentGranted: false,
@@ -755,7 +755,7 @@ scenarios:
         securityConsentGranted: false,
     };
 
-    pubtechQueue[0]('','','', {googleConsents: googleConsents});
+    pubtechQueue[0]('cmpTypePlaceHolder', {integrations: {googleConsentMode: googleConsents}});
 
     const updateConsentStateConfigured = copyFromWindow('__pubtech_cmp_gcm_updateConsentState');
 
