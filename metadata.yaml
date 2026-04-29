@@ -15,6 +15,8 @@
 homepage: "https://www.pubtech.ai/"
 documentation: "https://docs.pubtech.ai/pubtech-cmp"
 versions:
+  - sha: f56c0832bbbd7fda7dd294da6f7860c650efa96e
+    changeNotes: Improving Consent Mode Integration
   - sha: 7968a0c201fae69c356b20e5e294f746877adabf
     changeNotes: Performance improvement for disclosure consent
   - sha: 2630125aedce489ac60c8bb517b53911b1e6e21e
