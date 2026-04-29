@@ -78,6 +78,35 @@ ___TEMPLATE_PARAMETERS___
     "name": "urlPassThrough",
     "checkboxText": "urlPassThrough",
     "simpleValueType": true
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "injectCmpScript",
+    "checkboxText": "injectCmpScript",
+    "simpleValueType": true,
+    "defaultValue": false
+  },
+  {
+    "type": "TEXT",
+    "name": "cmpId",
+    "displayName": "CMP ID (Get it from our dashboard)",
+    "simpleValueType": true,
+    "canBeEmptyString": false,
+    "valueValidators": [
+      {
+        "type": "POSITIVE_NUMBER"
+      },
+      {
+        "type": "NON_EMPTY"
+      }
+    ],
+    "enablingConditions": [
+      {
+        "paramName": "injectCmpScript",
+        "paramValue": true,
+        "type": "EQUALS"
+      }
+    ]
   }
 ]
 
@@ -94,6 +123,8 @@ const callInWindow = require('callInWindow');
 const createQueue = require('createQueue');
 const gtagSet = require('gtagSet');
 const setInWindow = require('setInWindow');
+const injectScript = require('injectScript');
+const getTimestampMillis = require('getTimestampMillis');
 
 /**
  * Splits the input string using comma as a delimiter, returning an array of
@@ -167,6 +198,9 @@ function readConsentsFromCMP(cmpType, consentData) {
  * update callback
  */
 const main = (data) => {
+  const startTimestamp = getTimestampMillis();
+
+
   // Set developer ID
   gtagSet({
     'developer_id.dYWU3OD': true,
@@ -175,17 +209,20 @@ const main = (data) => {
   });
   // Set default consent state(s)
   if (data.defaultSettings) {
+    const appliedDataSet = [];
     data.defaultSettings.forEach(settings => {
       const defaultData = parseCommandData(settings);
       defaultData.wait_for_update = 500;
       setDefaultConsentState(defaultData);
-
-      //For testing purpose live and here
-      setInWindow('__pubtech_cmp_gcm_defaultConsentState', defaultData, true);
+      appliedDataSet.push(defaultData);
     });
+    
+      setInWindow('__pubtech_cmp_gcm_defaultConsentState', appliedDataSet, true);
+    
+    setInWindow('__pubtech_cmp_gcm_defaultConsentState_defaultSettings', data.defaultSettings, true);
+    
   } else {
-     // Set default consent state values for all regions
-    setDefaultConsentState({
+    const defaultSettings = {
       "ad_storage": 'denied',
       "ad_user_data": 'denied',
       "ad_personalization": 'denied',
@@ -194,10 +231,31 @@ const main = (data) => {
       "personalization_storage": 'denied',
       "security_storage": 'denied',
       "wait_for_update": 500,
-    });
+    };
+    
+    // Set default consent state values for all regions
+    setDefaultConsentState(defaultSettings);
+    
+    setInWindow('__pubtech_cmp_gcm_defaultConsentState_allRegions', data.defaultSettings, true);
   }
-
+  
+  // Set timing info and template signature for debug tool
+  setInWindow('__pubtech_cmp_gcm_template_info', {
+    timestamp: startTimestamp,
+    timestampAfterDefaults: getTimestampMillis(),
+    version: '2.0.0',
+    injectingCMP: !!(data.injectCmpScript && data.cmpId)
+  }, true);
+  
+  if (data.injectCmpScript && data.cmpId) {
+    injectScript('https://cmp.pubtech.ai/' + data.cmpId + '/pubtech-cmp-v2.js', () => {
+    data.gtmOnSuccess();
+  }, () => {
+    data.gtmOnFailure();
+  });
+  } else {
   data.gtmOnSuccess();
+  }
 
    /**
     * Add event listener to trigger update when consent changes
@@ -352,6 +410,123 @@ ___WEB_PERMISSIONS___
                   {
                     "type": 1,
                     "string": "__pubtech_cmp_gcm_defaultConsentState"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "__pubtech_cmp_gcm_template_info"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "__pubtech_cmp_gcm_defaultConsentState_allRegions"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "__pubtech_cmp_gcm_defaultConsentState_defaultSettings"
                   },
                   {
                     "type": 8,
@@ -717,6 +892,32 @@ ___WEB_PERMISSIONS___
       "isEditedByUser": true
     },
     "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "inject_script",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "urls",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 1,
+                "string": "https://*.pubtech.ai/*"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "clientAnnotations": {
+      "isEditedByUser": true
+    },
+    "isRequired": true
   }
 ]
 
@@ -794,7 +995,7 @@ scenarios:
     assertThat(isConsentGranted("personalization_storage")).isEqualTo(true);
     assertThat(isConsentGranted("security_storage")).isEqualTo(true);
 
-    const defaultConsentStateConfigured = copyFromWindow('__pubtech_cmp_gcm_defaultConsentState');
+    const defaultConsentStateConfigured = copyFromWindow('__pubtech_cmp_gcm_defaultConsentState')[0];
 
     assertThat(defaultConsentStateConfigured.ad_storage).isEqualTo('granted');
     assertThat(defaultConsentStateConfigured.analytics_storage).isEqualTo('granted');
